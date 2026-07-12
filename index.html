@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amigos Smartphones</title>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+:root{--primary:#123a5e;--accent:#f28c28;--bg:#f4f6f9;--card:#fff;--txt:#1b2733;--muted:#6b7c8f;--radius:14px;--shadow:0 4px 20px rgba(0,0,0,.08)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:var(--bg);color:var(--txt);line-height:1.5}
+img{max-width:100%;display:block}
+button{cursor:pointer;font-family:inherit}
+.btn{background:var(--primary);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-weight:600;font-size:15px;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{opacity:.92;transform:translateY(-1px)}
+.btn-accent{background:var(--accent)}
+.btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}
+.btn-danger{background:#e03e3e}
+.btn-block{width:100%}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:8px}
+input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid #dce3ea;border-radius:10px;font-size:15px;background:#fff;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+.field{margin-bottom:14px;position:relative}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--muted)}
+
+/* HEADER */
+header{background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.06);position:sticky;top:0;z-index:100}
+.nav{max-width:1200px;margin:auto;display:flex;align-items:center;gap:14px;padding:12px 16px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;color:var(--primary);cursor:pointer}
+.logo .dot{width:26px;height:34px;border:3px solid var(--primary);border-radius:6px;position:relative}
+.searchbar{flex:1;display:flex;align-items:center;background:var(--bg);border-radius:30px;padding:0 14px;max-width:480px}
+.searchbar input{border:none;background:transparent;padding:10px 8px}
+.searchbar svg{color:var(--muted);flex-shrink:0}
+.nav-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
+.icon-btn{background:none;border:none;color:var(--primary);display:flex;align-items:center}
+.cats{max-width:1200px;margin:auto;display:flex;gap:8px;padding:8px 16px;overflow-x:auto}
+.chip{background:var(--bg);border:1px solid #e2e8f0;padding:7px 15px;border-radius:20px;font-size:13px;white-space:nowrap;font-weight:600;color:var(--muted)}
+.chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* HERO */
+.hero{max-width:1200px;margin:16px auto;padding:0 16px}
+.hero-inner{background:linear-gradient(120deg,var(--primary),#1e5a8e);color:#fff;border-radius:18px;padding:34px 26px}
+.hero-inner h1{font-size:26px;margin-bottom:8px}
+.hero-inner p{opacity:.9;font-size:15px}
+
+/* GRID */
+.container{max-width:1200px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:.2s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px)}
+.card .thumb{aspect-ratio:1;background:#eef2f6;overflow:hidden}
+.card .thumb img{width:100%;height:100%;object-fit:cover}
+.card .body{padding:11px;display:flex;flex-direction:column;gap:5px;flex:1}
+.card .cat{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase}
+.card .name{font-weight:700;font-size:14px;line-height:1.3}
+.card .price{font-size:17px;font-weight:800;color:var(--primary);margin-top:auto}
+.card .stock{font-size:11px;color:var(--muted)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(15,25,40,.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:16px;backdrop-filter:blur(3px)}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:18px;max-width:440px;width:100%;max-height:92vh;overflow-y:auto;padding:26px;position:relative;animation:pop .25s}
+.modal.wide{max-width:680px}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:26px;color:var(--muted);line-height:1}
+.modal h2{margin-bottom:6px;color:var(--primary)}
+.modal .sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.eye{position:absolute;right:12px;top:35px;background:none;border:none;color:var(--muted)}
+.link{color:var(--primary);font-weight:600;cursor:pointer;font-size:14px}
+.center{text-align:center;margin-top:14px;font-size:14px}
+
+/* PRODUCT DETAIL */
+.detail-imgs{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px}
+.detail-imgs img{width:100%;border-radius:12px;object-fit:cover;aspect-ratio:1}
+.detail-main{width:100%;border-radius:14px;aspect-ratio:1;object-fit:cover;background:#eef2f6}
+.thumbs{display:flex;gap:8px;margin-top:8px;overflow-x:auto}
+.thumbs img{width:60px;height:60px;border-radius:8px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.thumbs img.active{border-color:var(--primary)}
+
+/* SPINNER */
+.spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+.spinner.dark{border-color:rgba(18,58,94,.25);border-top-color:var(--primary)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fullload{position:fixed;inset:0;background:rgba(255,255,255,.85);display:none;align-items:center;justify-content:center;z-index:2000;flex-direction:column;gap:14px}
+.fullload.show{display:flex}
+.fullload .spinner{width:44px;height:44px}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--txt);color:#fff;padding:14px 22px;border-radius:12px;z-index:3000;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.3);font-size:14px;max-width:90%}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.err{background:#e03e3e}#toast.ok{background:#1f9d55}
+
+/* FOOTER */
+footer{background:var(--primary);color:#fff;margin-top:40px;padding:30px 16px}
+.foot-inner{max-width:1200px;margin:auto;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
+footer a{color:#cfe0ef;cursor:pointer;display:block;margin:6px 0;text-decoration:none;font-size:14px}
+footer h4{margin-bottom:10px;font-size:15px}
+.wa-float{position:fixed;bottom:20px;right:20px;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:500;color:#fff}
+
+/* ADMIN */
+#adminApp{display:none}
+.admin-wrap{display:flex;min-height:100vh}
+.side{width:230px;background:var(--primary);color:#fff;padding:18px 0;position:fixed;height:100vh;overflow-y:auto;transition:.3s;z-index:200}
+.side h3{padding:0 20px 16px;font-size:18px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:10px}
+.side a{display:block;padding:13px 20px;color:#cfe0ef;text-decoration:none;font-size:14px;cursor:pointer;border-left:3px solid transparent}
+.side a.active,.side a:hover{background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--accent)}
+.main{flex:1;margin-left:230px;padding:20px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.hamburger{display:none;background:none;border:none;color:var(--primary)}
+.tab{display:none}.tab.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:#fff;padding:18px;border-radius:14px;box-shadow:var(--shadow)}
+.stat .n{font-size:26px;font-weight:800;color:var(--primary)}
+.stat .l{color:var(--muted);font-size:13px}
+.panel{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:20px}
+.panel h3{margin-bottom:14px;color:var(--primary)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid #eef2f6}
+th{color:var(--muted);font-size:12px;text-transform:uppercase}
+.table-scroll{overflow-x:auto}
+.imgprev{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.imgprev .ip{position:relative;width:66px;height:66px}
+.imgprev img{width:66px;height:66px;object-fit:cover;border-radius:8px}
+.imgprev .x{position:absolute;top:-6px;right:-6px;background:#e03e3e;color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:12px}
+.badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge.on{background:#d4f5e0;color:#1f9d55}.badge.off{background:#fde0e0;color:#e03e3e}
+.badge.pending{background:#fff3d6;color:#b7791f}.badge.paid{background:#d4f5e0;color:#1f9d55}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.switch{position:relative;display:inline-block;width:50px;height:28px}
+.switch input{display:none}.slider{position:absolute;inset:0;background:#ccc;border-radius:30px;transition:.3s}
+.slider:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
+.switch input:checked+.slider{background:#1f9d55}.switch input:checked+.slider:before{transform:translateX(22px)}
+.empty{text-align:center;padding:40px;color:var(--muted)}
+
+@media(max-width:768px){
+ .side{left:-240px}.side.open{left:0}.main{margin-left:0}
+ .hamburger{display:block}.row2{grid-template-columns:1fr}
+ .searchbar{max-width:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ PUBLIC SITE ============ -->
+<div id="site">
+<header>
+  <div class="nav">
+    <div class="logo" onclick="showHome()">
+      <span class="dot"></span><span id="siteName">Amigos</span>
+    </div>
+    <div class="searchbar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" placeholder="Search smartphones..." oninput="renderProducts()">
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="openSearchFocus()" title="Search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+      <div id="authArea"></div>
+    </div>
+  </div>
+  <div class="cats" id="catChips"></div>
+</header>
+
+<div class="hero"><div class="hero-inner">
+  <h1>Amigos Smartphones</h1>
+  <p>Taraba State trusted marketplace for phones, tablets & accessories.</p>
+</div></div>
+
+<div class="container">
+  <div class="grid" id="productGrid"></div>
+  <div class="empty" id="noProducts" style="display:none">No products found.</div>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <div><h4 id="footName">Amigos Smartphones</h4><p style="max-width:260px;font-size:13px;opacity:.85">Your trusted smartphone marketplace in Taraba State.</p></div>
+    <div><h4>Company</h4><a onclick="openInfo('about')">About Us</a><a onclick="openInfo('privacy')">Privacy Policy</a><a onclick="openInfo('terms')">Terms of Service</a></div>
+    <div><h4>Support</h4><a id="waLink" target="_blank">WhatsApp Support</a><a onclick="openInfo('about')">Customer Service</a></div>
+  </div>
+  <p style="text-align:center;margin-top:24px;opacity:.7;font-size:13px">© <span id="yr"></span> Amigos Smartphones. All rights reserved.</p>
+</footer>
+<a class="wa-float" id="waFloat" target="_blank" title="Chat on WhatsApp">
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.4 5 5.1-1.3A10 10 0 1 0 12 2Zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2 0 .4-.1.5l-.4.5c-.1.2-.3.3-.1.6.1.3.7 1.1 1.4 1.8 1 .8 1.7 1.1 2 1.2.2.1.4.1.5-.1l.7-.8c.2-.2.3-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.7-.1 1.2Z"/></svg>
+</a>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div id="adminApp">
+<div class="admin-wrap">
+  <nav class="side" id="side">
+    <h3>⚡ Command Centre</h3>
+    <a class="active" data-tab="dash" onclick="adminTab('dash',this)">📊 Dashboard</a>
+    <a data-tab="products" onclick="adminTab('products',this)">📱 Products</a>
+    <a data-tab="orders" onclick="adminTab('orders',this)">🛒 Orders</a>
+    <a data-tab="categories" onclick="adminTab('categories',this)">🏷️ Categories</a>
+    <a data-tab="admins" onclick="adminTab('admins',this)">👥 Admins</a>
+    <a data-tab="settings" onclick="adminTab('settings',this)">⚙️ Settings</a>
+    <a data-tab="content" onclick="adminTab('content',this)">📄 Pages Content</a>
+    <a data-tab="account" onclick="adminTab('account',this)">🔑 My Login</a>
+    <a onclick="adminLogout()" style="color:#ffb4b4">🚪 Logout</a>
+  </nav>
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="document.getElementById('side').classList.toggle('open')">☰</button>
+      <h2 style="color:var(--primary)">Amigos Command Centre</h2>
+      <span id="adminWho" style="color:var(--muted);font-size:14px"></span>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="tab active" id="tab-dash">
+      <div class="stats" id="statCards"></div>
+      <div class="panel"><h3>Recent Orders</h3><div class="table-scroll"><table id="recentOrders"></table></div></div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="tab" id="tab-products">
+      <div class="panel">
+        <h3 id="prodFormTitle">Publish New Product</h3>
+        <input type="hidden" id="pId">
+        <div class="row2">
+          <div class="field"><label>Product Name</label><input id="pName"></div>
+          <div class="field"><label>Category</label><select id="pCategory"></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Price (₦)</label><input id="pPrice" type="number"></div>
+          <div class="field"><label>Stock Quantity</label><input id="pStock" type="number" value="1"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="pDesc" rows="4"></textarea></div>
+        <div class="field"><label>Product Images</label>
+          <input type="file" id="pImages" accept="image/*" multiple onchange="handleImages(event)">
+          <div class="imgprev" id="imgPreview"></div>
+        </div>
+        <div class="field"><label style="display:flex;align-items:center;gap:10px"><span>Active (visible to customers)</span>
+          <label class="switch"><input type="checkbox" id="pActive" checked><span class="slider"></span></label></label></div>
+        <button class="btn" id="saveProdBtn" onclick="saveProduct()">Publish Product</button>
+        <button class="btn btn-outline" onclick="resetProdForm()" style="margin-left:8px">Clear</button>
+      </div>
+      <div class="panel"><h3>All Products</h3><div class="table-scroll"><table id="prodTable"></table></div></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="tab" id="tab-orders">
+      <div class="panel"><h3>Customer Orders</h3><div class="table-scroll"><table id="orderTable"></table></div></div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="tab" id="tab-categories">
+      <div class="panel"><h3>Product Labels / Categories</h3>
+        <div style="display:flex;gap:10px;margin-bottom:16px"><input id="newCat" placeholder="New category name"><button class="btn" onclick="addCategory()">Add</button></div>
+        <div class="table-scroll"><table id="catTable"></table></div>
+      </div>
+    </div>
+
+    <!-- ADMINS -->
+    <div class="tab" id="tab-admins">
+      <div class="panel"><h3>Add New Admin</h3>
+        <div class="row2"><div class="field"><label>Name</label><input id="aName"></div><div class="field"><label>Email</label><input id="aEmail"></div></div>
+        <div class="field"><label>Password</label><input id="aPass" type="password"></div>
+        <button class="btn" onclick="addAdmin()">Add Admin</button>
+      </div>
+      <div class="panel"><h3>Admins</h3><div class="table-scroll"><table id="adminTable"></table></div></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab" id="tab-settings">
+      <div class="panel"><h3>General Settings</h3>
+        <div class="field"><label>Site Name</label><input id="sName"></div>
+        <div class="field"><label>WhatsApp Number</label><input id="sWhats"></div>
+        <div class="field"><label style="display:flex;align-items:center;gap:10px"><span>Home Delivery Enabled</span>
+          <label class="switch"><input type="checkbox" id="sDelivery"><span class="slider"></span></label></label></div>
+        <button class="btn" onclick="saveSettings()">Save Settings</button>
+      </div>
+      <div class="panel"><h3>Paystack Payment Gateway</h3>
+        <div class="field"><label>Paystack Public Key</label><input id="sPubKey" placeholder="pk_..."></div>
+        <div class="field"><label>Paystack Secret Key</label><input id="sSecKey" type="password" placeholder="sk_..."></div>
+        <button class="btn" onclick="saveSettings()">Save Payment Keys</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="tab" id="tab-content">
+      <div class="panel"><h3>About Us</h3><textarea id="cAbout" rows="6"></textarea><button class="btn" style="margin-top:10px" onclick="saveSettings()">Save</button></div>
+      <div class="panel"><h3>Privacy Policy</h3><textarea id="cPrivacy" rows="6"></textarea><button class="btn" style="margin-top:10px" onclick="saveSettings()">Save</button></div>
+      <div class="panel"><h3>Terms of Service</h3><textarea id="cTerms" rows="6"></textarea><button class="btn" style="margin-top:10px" onclick="saveSettings()">Save</button></div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="tab" id="tab-account">
+      <div class="panel"><h3>Change My Login Details</h3>
+        <div class="field"><label>Display Name</label><input id="mName"></div>
+        <div class="field"><label>New Login Email</label><input id="mEmail"></div>
+        <div class="field"><label>New Password (leave blank to keep)</label><input id="mPass" type="password"></div>
+        <button class="btn" onclick="updateMyCreds()">Update Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="overlay" id="authModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal('authModal')">&times;</button>
+    <div id="loginView">
+      <h2>Welcome Back</h2><p class="sub">Sign in to your account</p>
+      <div class="field"><label>Email</label><input id="liEmail" type="email"></div>
+      <div class="field"><label>Password</label><input id="liPass" type="password"><button class="eye" onclick="togglePwd('liPass',this)">👁️</button></div>
+      <button class="btn btn-block" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <p class="center"><span class="link" onclick="switchAuth('forgot')">Forgot password?</span></p>
+      <p class="center">No account? <span class="link" onclick="switchAuth('signup')">Create one</span></p>
+    </div>
+    <div id="signupView" style="display:none">
+      <h2>Create Account</h2><p class="sub">Join Amigos Smartphones</p>
+      <div class="field"><label>Full Name</label><input id="suName"></div>
+      <div class="field"><label>Email</label><input id="suEmail" type="email"></div>
+      <div class="field"><label>Phone</label><input id="suPhone"></div>
+      <div class="field"><label>Password</label><input id="suPass" type="password"><button class="eye" onclick="togglePwd('suPass',this)">👁️</button></div>
+      <button class="btn btn-block" id="signupBtn" onclick="doSignup()">Create Account</button>
+      <p class="center">Have an account? <span class="link" onclick="switchAuth('login')">Sign in</span></p>
+    </div>
+    <div id="forgotView" style="display:none">
+      <h2>Reset Password</h2><p class="sub">We'll email you a reset code</p>
+      <div class="field"><label>Email</label><input id="fpEmail" type="email"></div>
+      <button class="btn btn-block" id="forgotBtn" onclick="doForgot()">Send Reset Code</button>
+      <div id="resetFields" style="display:none;margin-top:16px">
+        <div class="field"><label>Reset Code</label><input id="fpCode"></div>
+        <div class="field"><label>New Password</label><input id="fpNew" type="password"><button class="eye" onclick="togglePwd('fpNew',this)">👁️</button></div>
+        <button class="btn btn-block btn-accent" id="resetBtn" onclick="doReset()">Reset Password</button>
+      </div>
+      <p class="center"><span class="link" onclick="switchAuth('login')">Back to login</span></p>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="detailModal"><div class="modal wide">
+  <button class="close" onclick="closeModal('detailModal')">&times;</button>
+  <div id="detailContent"></div>
+</div></div>
+
+<div class="overlay" id="orderModal"><div class="modal">
+  <button class="close" onclick="closeModal('orderModal')">&times;</button>
+  <h2>Complete Your Order</h2><p class="sub" id="orderProdName"></p>
+  <div class="field"><label>Quantity</label><input id="oQty" type="number" value="1" min="1" oninput="updateOrderTotal()"></div>
+  <div class="field"><label>Phone Number</label><input id="oPhone"></div>
+  <div class="field" id="deliveryField"><label>Delivery Option</label>
+    <select id="oDelivery" onchange="toggleLGA()"><option value="pickup">Store Pickup</option><option value="delivery">Home Delivery (Taraba)</option></select></div>
+  <div class="field" id="lgaField" style="display:none"><label>Local Government Area</label><select id="oLGA"></select></div>
+  <div class="field"><label>Delivery Address</label><textarea id="oAddress" rows="2"></textarea></div>
+  <p style="font-weight:800;color:var(--primary);font-size:18px;margin-bottom:14px">Total: <span id="orderTotal"></span></p>
+  <button class="btn btn-block btn-accent" id="payBtn" onclick="payNow()">Pay Now with Paystack</button>
+</div></div>
+
+<div class="overlay" id="infoModal"><div class="modal wide">
+  <button class="close" onclick="closeModal('infoModal')">&times;</button>
+  <h2 id="infoTitle"></h2><div id="infoBody" style="white-space:pre-wrap;color:var(--txt);margin-top:12px;font-size:15px;line-height:1.7"></div>
+</div></div>
+
+<div class="fullload" id="fullLoad"><div class="spinner"></div><p style="color:var(--primary);font-weight:600">Please wait...</p></div>
+<div id="toast"></div>
+
+<script>
+/* ====== CONFIG — PASTE YOUR WEB APP URL BELOW ====== */
+const API_URL = "https://script.google.com/macros/s/AKfycbyYRmbS7j1omlydPVZLcf1sTN2EUAZiWhgYBsglBRlbJapyU1Z9zeH-ch4K-ICOxmKK4w/exec";
+
+const TARABA_LGA = ["Ardo-Kola","Bali","Donga","Gashaka","Gassol","Ibi","Jalingo","Karim-Lamido","Kumi","Lau","Sardauna","Takum","Ussa","Wukari","Yorro","Zing"];
+
+let STATE={settings:{},categories:[],products:[],activeCat:'all',user:null,admin:null,newImages:[],currentProduct:null};
+
+/* ====== API ====== */
+async function api(action,data={}){
+  const body=Object.assign({action},data);
+  if(STATE.admin){body.adminEmail=STATE.admin.email;body.adminPassword=STATE.admin.pwd;}
+  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(body)});
+  return res.json();
+}
+function loading(on){document.getElementById('fullLoad').classList.toggle('show',on);}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+(type||'');setTimeout(()=>t.className=t.className.replace('show',''),3200);}
+function fmt(n){return STATE.settings.currency+' '+Number(n).toLocaleString();}
+function btnLoad(id,on,txt){const b=document.getElementById(id);if(on){b.dataset.t=b.innerHTML;b.innerHTML='<span class="spinner"></span>';b.disabled=true;}else{b.innerHTML=txt||b.dataset.t;b.disabled=false;}}
+
+/* ====== BOOTSTRAP ====== */
+async function init(){
+  document.getElementById('yr').textContent=new Date().getFullYear();
+  const r=await api('bootstrap');
+  if(r.ok){STATE.settings=r.settings;STATE.categories=r.categories;STATE.products=r.products;applySettings();renderCategories();renderProducts();}
+  const su=localStorage.getItem('amigos_user');if(su){STATE.user=JSON.parse(su);}
+  renderAuthArea();
+  setInterval(pollProducts,15000); // live updates without refresh
+}
+async function pollProducts(){const r=await api('getProducts');if(r.ok){STATE.products=r.products;renderProducts();}}
+function applySettings(){
+  const s=STATE.settings;
+  document.getElementById('siteName').textContent=s.siteName||'Amigos';
+  document.getElementById('footName').textContent=s.siteName;
+  document.title=s.siteName;
+  const wa='https://wa.me/234'+String(s.whatsapp).replace(/^0/,'');
+  document.getElementById('waLink').href=wa;document.getElementById('waFloat').href=wa;
+}
+function renderCategories(){
+  let h='<div class="chip '+(STATE.activeCat==='all'?'active':'')+'" onclick="setCat(\'all\')">All</div>';
+  STATE.categories.forEach(c=>h+='<div class="chip '+(STATE.activeCat===c.name?'active':'')+'" onclick="setCat(\''+c.name+'\')">'+c.name+'</div>');
+  document.getElementById('catChips').innerHTML=h;
+}
+function setCat(c){STATE.activeCat=c;renderCategories();renderProducts();}
+function renderProducts(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  let list=STATE.products.filter(p=>{
+    const mc=STATE.activeCat==='all'||p.category===STATE.activeCat;
+    const ms=!q||p.name.toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q);
+    return mc&&ms;});
+  const grid=document.getElementById('productGrid');
+  document.getElementById('noProducts').style.display=list.length?'none':'block';
+  grid.innerHTML=list.map(p=>`<div class="card" onclick="openDetail('${p.id}')">
+    <div class="thumb"><img src="${(p.images&&p.images[0])||'https://via.placeholder.com/300?text=No+Image'}"></div>
+    <div class="body"><span class="cat">${p.category||''}</span><span class="name">${p.name}</span>
+    <span class="price">${fmt(p.price)}</span><span class="stock">${p.stock>0?'In stock':'Out of stock'}</span></div></div>`).join('');
+}
+function openSearchFocus(){document.getElementById('searchInput').focus();}
+
+/* ====== AUTH AREA ====== */
+function renderAuthArea(){
+  const a=document.getElementById('authArea');
+  if(STATE.user){a.innerHTML=`<span style="font-size:13px;color:var(--muted);margin-right:8px">Hi, ${STATE.user.name.split(' ')[0]}</span><button class="btn btn-sm btn-outline" onclick="logoutUser()">Logout</button>`;}
+  else{a.innerHTML=`<button class="btn btn-sm" onclick="openAuth('login')">Sign In</button>`;}
+}
+function logoutUser(){STATE.user=null;localStorage.removeItem('amigos_user');renderAuthArea();toast('Logged out','ok');}
+
+/* ====== MODALS ====== */
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function openAuth(v){switchAuth(v);openModal('authModal');}
+function switchAuth(v){['login','signup','forgot'].forEach(x=>document.getElementById(x+'View').style.display=x===v?'block':'none');if(v==='forgot')document.getElementById('resetFields').style.display='none';}
+function togglePwd(id,btn){const i=document.getElementById(id);if(i.type==='password'){i.type='text';btn.textContent='🙈';}else{i.type='password';btn.textContent='👁️';}}
+
+/* ====== LOGIN (detects admin) ====== */
+async function doLogin(){
+  const email=document.getElementById('liEmail').value.trim();const pass=document.getElementById('liPass').value;
+  if(!email||!pass){toast('Enter email and password','err');return;}
+  btnLoad('loginBtn',true);
+  const r=await api('login',{email,password:pass});
+  btnLoad('loginBtn',false,'Sign In');
+  if(!r.ok){toast(r.error,'err');return;}
+  if(r.role==='admin'){STATE.admin={email:email,pwd:pass,name:r.user.name,role:r.user.role};closeModal('authModal');enterAdmin();}
+  else{STATE.user=r.user;localStorage.setItem('amigos_user',JSON.stringify(r.user));renderAuthArea();closeModal('authModal');toast('Welcome back!','ok');if(STATE.pendingProduct){openDetail(STATE.pendingProduct);STATE.pendingProduct=null;}}
+}
+async function doSignup(){
+  const name=document.getElementById('suName').value.trim(),email=document.getElementById('suEmail').value.trim(),phone=document.getElementById('suPhone').value.trim(),pass=document.getElementById('suPass').value;
+  if(!name||!email||!pass){toast('Fill all required fields','err');return;}
+  btnLoad('signupBtn',true);
+  const r=await api('signup',{name,email,phone,password:pass});
+  btnLoad('signupBtn',false,'Create Account');
+  if(!r.ok){toast(r.error,'err');return;}
+  STATE.user=r.user;localStorage.setItem('amigos_user',JSON.stringify(r.user));renderAuthArea();closeModal('authModal');toast('Account created!','ok');
+  if(STATE.pendingProduct){openDetail(STATE.pendingProduct);STATE.pendingProduct=null;}
+}
+async function doForgot(){
+  const email=document.getElementById('fpEmail').value.trim();if(!email){toast('Enter your email','err');return;}
+  btnLoad('forgotBtn',true);const r=await api('forgotPassword',{email});btnLoad('forgotBtn',false,'Send Reset Code');
+  if(!r.ok){toast(r.error,'err');return;}
+  document.getElementById('resetFields').style.display='block';toast(r.message,'ok');
+}
+async function doReset(){
+  const email=document.getElementById('fpEmail').value.trim(),code=document.getElementById('fpCode').value.trim(),pass=document.getElementById('fpNew').value;
+  if(!code||!pass){toast('Enter code and new password','err');return;}
+  btnLoad('resetBtn',true);const r=await api('resetPassword',{email,code,password:pass});btnLoad('resetBtn',false,'Reset Password');
+  if(!r.ok){toast(r.error,'err');return;}
+  toast('Password reset! Please login','ok');switchAuth('login');
+}
+
+/* ====== PRODUCT DETAIL ====== */
+function openDetail(id){
+  const p=STATE.products.find(x=>x.id==id);if(!p)return;STATE.currentProduct=p;
+  const imgs=p.images.length?p.images:['https://via.placeholder.com/400?text=No+Image'];
+  document.getElementById('detailContent').innerHTML=`
+    <img class="detail-main" id="mainImg" src="${imgs[0]}">
+    <div class="thumbs">${imgs.map((im,i)=>`<img class="${i===0?'active':''}" src="${im}" onclick="swapImg('${im}',this)">`).join('')}</div>
+    <span class="cat" style="color:var(--accent);font-weight:700;font-size:12px">${p.category||''}</span>
+    <h2 style="margin-top:6px">${p.name}</h2>
+    <p style="font-size:24px;font-weight:800;color:var(--primary);margin:8px 0">${fmt(p.price)}</p>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:10px">${p.stock>0?p.stock+' in stock':'Out of stock'}</p>
+    <div style="white-space:pre-wrap;line-height:1.7;color:var(--txt)">${p.description||'No description.'}</div>
+    <button class="btn btn-block btn-accent" style="margin-top:18px" onclick="buyNow('${p.id}')">${p.stock>0?'Buy Now':'Out of Stock'}</button>`;
+  openModal('detailModal');
+}
+function swapImg(src,el){document.getElementById('mainImg').src=src;document.querySelectorAll('.thumbs img').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
+function showHome(){closeModal('detailModal');window.scrollTo(0,0);}
+
+/* ====== BUY / ORDER ====== */
+function buyNow(id){
+  const p=STATE.products.find(x=>x.id==id);if(!p||p.stock<=0){toast('Out of stock','err');return;}
+  if(!STATE.user){STATE.pendingProduct=id;closeModal('detailModal');toast('Please sign up or login to order','');openAuth('signup');return;}
+  closeModal('detailModal');STATE.currentProduct=p;
+  document.getElementById('orderProdName').textContent=p.name;
+  document.getElementById('oQty').value=1;
+  document.getElementById('deliveryField').style.display=STATE.settings.homeDelivery==='on'?'block':'none';
+  document.getElementById('oLGA').innerHTML=TARABA_LGA.map(l=>`<option>${l}</option>`).join('');
+  toggleLGA();updateOrderTotal();openModal('orderModal');
+}
+function toggleLGA(){document.getElementById('lgaField').style.display=document.getElementById('oDelivery').value==='delivery'?'block':'none';}
+function updateOrderTotal(){const q=Number(document.getElementById('oQty').value)||1;document.getElementById('orderTotal').textContent=fmt(STATE.currentProduct.price*q);}
+
+async function payNow(){
+  const p=STATE.currentProduct;const qty=Number(document.getElementById('oQty').value)||1;
+  const phone=document.getElementById('oPhone').value.trim();const address=document.getElementById('oAddress').value.trim();
+  const delivery=STATE.settings.homeDelivery==='on'?document.getElementById('oDelivery').value:'pickup';
+  const lga=delivery==='delivery'?document.getElementById('oLGA').value:'';
+  if(!phone||!address){toast('Enter phone and address','err');return;}
+  if(!STATE.settings.paystackPublic){toast('Payment not configured. Contact support.','err');return;}
+  const amount=p.price*qty;const ref='AMG-'+Date.now();
+  const handler=PaystackPop.setup({
+    key:STATE.settings.paystackPublic,email:STATE.user.email,amount:amount*100,currency:'NGN',ref:ref,
+    metadata:{custom_fields:[{display_name:"Product",variable_name:"product",value:p.name}]},
+    callback:function(resp){finishOrder(p,qty,amount,phone,address,lga,delivery,resp.reference);},
+    onClose:function(){toast('Payment cancelled','err');}
+  });
+  handler.openIframe();
+}
+async function finishOrder(p,qty,amount,phone,address,lga,delivery,ref){
+  loading(true);
+  await api('placeOrder',{userEmail:STATE.user.email,userName:STATE.user.name,productId:p.id,productName:p.name,qty,amount,phone,address,lga,delivery,paymentRef:ref});
+  const v=await api('verifyPayment',{reference:ref});
+  loading(false);closeModal('orderModal');
+  if(v.ok)toast('Payment successful! Order confirmed.','ok');
+  else toast('Order placed. Payment verification pending.','ok');
+}
+
+/* ====== INFO PAGES ====== */
+function openInfo(t){
+  const map={about:['About Us',STATE.settings.aboutUs],privacy:['Privacy Policy',STATE.settings.privacy],terms:['Terms of Service',STATE.settings.terms]};
+  document.getElementById('infoTitle').textContent=map[t][0];document.getElementById('infoBody').textContent=map[t][1];openModal('infoModal');
+}
+
+/* ================= ADMIN ================= */
+function enterAdmin(){document.getElementById('site').style.display='none';document.getElementById('adminApp').style.display='block';document.getElementById('adminWho').textContent=STATE.admin.name+' ('+STATE.admin.role+')';loadAdminData();}
+function adminLogout(){STATE.admin=null;document.getElementById('adminApp').style.display='none';document.getElementById('site').style.display='block';toast('Admin logged out','ok');}
+function adminTab(t,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.querySelectorAll('.side a').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('side').classList.remove('open');}
+
+let ADMIN={};
+async function loadAdminData(){
+  loading(true);const r=await api('adminGetAll');loading(false);
+  if(!r.ok){toast(r.error,'err');adminLogout();return;}
+  ADMIN=r;renderStats();renderAdminProducts();renderAdminOrders();renderAdminCats();renderAdminAdmins();fillSettings();fillContent();fillAccount();fillProdCategories();
+}
+function renderStats(){
+  const paid=ADMIN.orders.filter(o=>o.status==='paid');
+  const rev=paid.reduce((s,o)=>s+Number(o.amount),0);
+  document.getElementById('statCards').innerHTML=`
+    <div class="stat"><div class="n">${ADMIN.products.length}</div><div class="l">Products</div></div>
+    <div class="stat"><div class="n">${ADMIN.orders.length}</div><div class="l">Total Orders</div></div>
+    <div class="stat"><div class="n">${paid.length}</div><div class="l">Paid Orders</div></div>
+    <div class="stat"><div class="n">${fmt(rev)}</div><div class="l">Revenue</div></div>`;
+  const ro=ADMIN.orders.slice(-5).reverse();
+  document.getElementById('recentOrders').innerHTML='<tr><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th></tr>'+
+    (ro.length?ro.map(o=>`<tr><td>${o.userName}</td><td>${o.productName}</td><td>${fmt(o.amount)}</td><td><span class="badge ${o.status}">${o.status}</span></td></tr>`).join(''):'<tr><td colspan="4" class="empty">No orders yet</td></tr>');
+}
+function fillProdCategories(){document.getElementById('pCategory').innerHTML=ADMIN.categories.map(c=>`<option>${c.name}</option>`).join('');}
+function renderAdminProducts(){
+  const t=document.getElementById('prodTable');
+  t.innerHTML='<tr><th>Image</th><th>Name</th><th>Price</th><th>Cat</th><th>Stock</th><th>Status</th><th>Actions</th></tr>'+
+   (ADMIN.products.length?ADMIN.products.map(p=>`<tr>
+    <td><img src="${(p.images&&p.images[0])||'https://via.placeholder.com/50'}" style="width:44px;height:44px;object-fit:cover;border-radius:6px"></td>
+    <td>${p.name}</td><td>${fmt(p.price)}</td><td>${p.category}</td><td>${p.stock}</td>
+    <td><span class="badge ${(String(p.active)==='true')?'on':'off'}">${(String(p.active)==='true')?'Active':'Hidden'}</span></td>
+    <td><button class="btn btn-sm" onclick='editProduct("${p.id}")'>Edit</button> <button class="btn btn-sm btn-danger" onclick='delProduct("${p.id}")'>Delete</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No products</td></tr>');
+}
+function handleImages(e){
+  const files=[...e.target.files];
+  files.forEach(f=>{const rd=new FileReader();rd.onload=()=>{STATE.newImages.push(rd.result);renderImgPreview();};rd.readAsDataURL(f);});
+}
+function renderImgPreview(){document.getElementById('imgPreview').innerHTML=STATE.newImages.map((im,i)=>`<div class="ip"><img src="${im}"><button class="x" onclick="removeImg(${i})">×</button></div>`).join('');}
+function removeImg(i){STATE.newImages.splice(i,1);renderImgPreview();}
+function resetProdForm(){document.getElementById('pId').value='';document.getElementById('pName').value='';document.getElementById('pPrice').value='';document.getElementById('pStock').value=1;document.getElementById('pDesc').value='';document.getElementById('pActive').checked=true;STATE.newImages=[];renderImgPreview();document.getElementById('prodFormTitle').textContent='Publish New Product';document.getElementById('saveProdBtn').textContent='Publish Product';}
+function editProduct(id){
+  const p=ADMIN.products.find(x=>x.id==id);
+  document.getElementById('pId').value=p.id;document.getElementById('pName').value=p.name;document.getElementById('pPrice').value=p.price;document.getElementById('pStock').value=p.stock;document.getElementById('pDesc').value=p.description;document.getElementById('pCategory').value=p.category;document.getElementById('pActive').checked=String(p.active)==='true';
+  STATE.newImages=[...(p.images||[])];renderImgPreview();
+  document.getElementById('prodFormTitle').textContent='Edit Product';document.getElementById('saveProdBtn').textContent='Update Product';
+  adminTab('products',document.querySelector('[data-tab=products]'));window.scrollTo(0,0);
+}
+async function saveProduct(){
+  const name=document.getElementById('pName').value.trim();const price=document.getElementById('pPrice').value;
+  if(!name||!price){toast('Name and price required','err');return;}
+  btnLoad('saveProdBtn',true);
+  const r=await api('saveProduct',{id:document.getElementById('pId').value||'',name,price,stock:document.getElementById('pStock').value||0,description:document.getElementById('pDesc').value,category:document.getElementById('pCategory').value,images:JSON.stringify(STATE.newImages),active:document.getElementById('pActive').checked});
+  btnLoad('saveProdBtn',false,'Publish Product');
+  if(!r.ok){toast(r.error,'err');return;}
+  toast(r.message,'ok');resetProdForm();loadAdminData();pollProducts();
+}
+async function delProduct(id){
+  loading(true);const r=await api('deleteProduct',{id});loading(false);
+  if(r.ok){toast('Deleted','ok');loadAdminData();pollProducts();}else toast(r.error,'err');
+}
+
+function renderAdminOrders(){
+  document.getElementById('orderTable').innerHTML='<tr><th>Date</th><th>Customer</th><th>Product</th><th>Qty</th><th>Amount</th><th>Phone</th><th>Delivery</th><th>LGA</th><th>Status</th><th></th></tr>'+
+   (ADMIN.orders.length?ADMIN.orders.slice().reverse().map(o=>`<tr>
+    <td>${new Date(o.createdAt).toLocaleDateString()}</td><td>${o.userName}<br><small>${o.userEmail}</small></td><td>${o.productName}</td><td>${o.qty}</td><td>${fmt(o.amount)}</td><td>${o.phone}</td><td>${o.delivery}</td><td>${o.lga||'-'}</td>
+    <td><span class="badge ${o.status}">${o.status}</span></td>
+    <td><select onchange="updOrder('${o.id}',this.value)" style="padding:5px;font-size:12px"><option ${o.status=='pending'?'selected':''}>pending</option><option ${o.status=='paid'?'selected':''}>paid</option><option value="dispatched" ${o.status=='dispatched'?'selected':''}>dispatched</option><option value="delivered" ${o.status=='delivered'?'selected':''}>delivered</option></select></td></tr>`).join(''):'<tr><td colspan="10" class="empty">No orders</td></tr>');
+}
+async function updOrder(id,status){const r=await api('updateOrderStatus',{id,status});if(r.ok){toast('Updated','ok');loadAdminData();}}
+
+function renderAdminCats(){
+  document.getElementById('catTable').innerHTML='<tr><th>Category</th><th></th></tr>'+ADMIN.categories.map(c=>`<tr><td>${c.name}</td><td><button class="btn btn-sm btn-danger" onclick="delCat('${c.id}')">Delete</button></td></tr>`).join('');
+}
+async function addCategory(){const name=document.getElementById('newCat').value.trim();if(!name){toast('Enter name','err');return;}const r=await api('addCategory',{name});if(r.ok){toast('Added','ok');document.getElementById('newCat').value='';loadAdminData();pollBootstrap();}}
+async function delCat(id){const r=await api('deleteCategory',{id});if(r.ok){toast('Deleted','ok');loadAdminData();pollBootstrap();}}
+async function pollBootstrap(){const r=await api('bootstrap');if(r.ok){STATE.categories=r.categories;renderCategories();}}
+
+function renderAdminAdmins(){
+  document.getElementById('adminTable').innerHTML='<tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr>'+ADMIN.admins.map(a=>`<tr><td>${a.name}</td><td>${a.email}</td><td>${a.role}</td><td>${a.role==='superadmin'?'—':`<button class="btn btn-sm btn-danger" onclick="delAdmin('${a.id}')">Remove</button>`}</td></tr>`).join('');
+}
+async function addAdmin(){
+  const newName=document.getElementById('aName').value.trim(),newEmail=document.getElementById('aEmail').value.trim(),newPassword=document.getElementById('aPass').value;
+  if(!newName||!newEmail||!newPassword){toast('Fill all fields','err');return;}
+  const r=await api('addAdmin',{newName,newEmail,newPassword});
+  if(r.ok){toast('Admin added','ok');document.getElementById('aName').value='';document.getElementById('aEmail').value='';document.getElementById('aPass').value='';loadAdminData();}else toast(r.error,'err');
+}
+async function delAdmin(id){const r=await api('deleteAdmin',{id});if(r.ok){toast('Removed','ok');loadAdminData();}else toast(r.error,'err');}
+
+function fillSettings(){const s=ADMIN.settings;document.getElementById('sName').value=s.siteName;document.getElementById('sWhats').value=s.whatsapp;document.getElementById('sDelivery').checked=s.homeDelivery==='on';document.getElementById('sPubKey').value=s.paystackPublic||'';document.getElementById('sSecKey').value=ADMIN.paystackSecret||'';}
+function fillContent(){document.getElementById('cAbout').value=ADMIN.settings.aboutUs;document.getElementById('cPrivacy').value=ADMIN.settings.privacy;document.getElementById('cTerms').value=ADMIN.settings.terms;}
+async function saveSettings(){
+  loading(true);
+  const r=await api('saveSettings',{siteName:document.getElementById('sName').value,whatsapp:document.getElementById('sWhats').value,homeDelivery:document.getElementById('sDelivery').checked?'on':'off',paystackPublic:document.getElementById('sPubKey').value,paystackSecret:document.getElementById('sSecKey').value,aboutUs:document.getElementById('cAbout').value,privacy:document.getElementById('cPrivacy').value,terms:document.getElementById('cTerms').value});
+  loading(false);
+  if(r.ok){toast('Saved','ok');loadAdminData();pollBootstrap();}else toast(r.error,'err');
+}
+function fillAccount(){document.getElementById('mName').value=STATE.admin.name;document.getElementById('mEmail').value=STATE.admin.email;}
+async function updateMyCreds(){
+  const newName=document.getElementById('mName').value.trim(),newLoginEmail=document.getElementById('mEmail').value.trim(),newLoginPassword=document.getElementById('mPass').value;
+  loading(true);const r=await api('updateAdminCreds',{newName,newLoginEmail,newLoginPassword});loading(false);
+  if(r.ok){toast('Login updated. Use new details next time.','ok');if(newLoginEmail)STATE.admin.email=newLoginEmail;if(newLoginPassword)STATE.admin.pwd=newLoginPassword;STATE.admin.name=newName;document.getElementById('mPass').value='';document.getElementById('adminWho').textContent=newName+' ('+STATE.admin.role+')';}else toast(r.error,'err');
+}
+
+/* close overlay on backdrop click */
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+init();
+</script>
+</body>
+</html>
